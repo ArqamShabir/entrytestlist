@@ -31,16 +31,16 @@ const Home = () => {
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
-                <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
+                <h1 className="text-4xl lg:text-5xl font-bold leading-tight font-heading">
                   <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    Master Your
+                    Master Your Entry Tests
                   </span>
                   <br />
-                  <span className="text-foreground">Entry Tests in Pakistan</span>
+                  <span className="text-foreground">in Pakistan</span>
                 </h1>
                 <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
                   Complete preparation guide for MDCAT, NAT, GAT, and other Pakistani entrance tests. 
-                  Get expert tips, latest updates, and proven strategies to secure your admission.
+                  Expert tips and proven strategies for your success.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button size="lg" className="text-lg px-8" asChild>
@@ -51,16 +51,13 @@ const Home = () => {
                   </Button>
                 </div>
                 
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-6 pt-8">
+                {/* Stats - Simplified */}
+                <div className="grid grid-cols-3 gap-4 pt-6">
                   {stats.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
                       <div key={index} className="text-center">
-                        <div className="flex justify-center mb-2">
-                          <Icon className="w-6 h-6 text-primary" />
-                        </div>
-                        <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+                        <div className="text-xl font-bold text-foreground">{stat.value}</div>
                         <div className="text-sm text-muted-foreground">{stat.label}</div>
                       </div>
                     );
@@ -107,19 +104,16 @@ const Home = () => {
                 </div>
               </section>
 
-              {/* Search Section */}
-              <section className="bg-muted/30 rounded-2xl p-8">
-                <div className="text-center max-w-2xl mx-auto">
-                  <Search className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold text-foreground mb-4">
-                    Find Your Perfect Test
-                  </h2>
-                  <p className="text-muted-foreground mb-6">
-                    Looking for a specific test or preparation guide? Browse our comprehensive collection 
-                    of Pakistani entrance tests and find exactly what you need.
+              {/* Search Section - Cleaner Design */}
+              <section className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl p-6 border border-primary/10">
+                <div className="text-center max-w-xl mx-auto">
+                  <Search className="w-10 h-10 text-primary mx-auto mb-3" />
+                  <h2 className="text-xl font-bold text-foreground mb-3">Find Your Test</h2>
+                  <p className="text-muted-foreground mb-4 text-sm">
+                    Browse our comprehensive collection of Pakistani entrance tests.
                   </p>
-                  <Button size="lg" asChild>
-                    <Link to="/tests">Browse All Tests</Link>
+                  <Button asChild>
+                    <Link to="/tests">Browse Tests</Link>
                   </Button>
                 </div>
               </section>
@@ -145,33 +139,27 @@ const Home = () => {
               <div className="sticky top-8 space-y-6">
                 {sidebarAd && <AdSpace adSpace={sidebarAd} />}
                 
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
-                    <div className="space-y-3">
+                <Card className="border-primary/20">
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-foreground mb-3">Quick Links</h3>
+                    <div className="space-y-2">
                       <Link 
                         to="/tests/mdcat-medical-college-admission-test" 
                         className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                       >
-                        MDCAT Preparation Guide
+                        MDCAT Guide
                       </Link>
                       <Link 
                         to="/tests/nat-national-aptitude-test" 
                         className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                       >
-                        NAT Test Pattern
+                        NAT Pattern
                       </Link>
                       <Link 
                         to="/tests/gat-graduate-assessment-test" 
                         className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                       >
                         GAT Syllabus
-                      </Link>
-                      <Link 
-                        to="/blog" 
-                        className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        Preparation Tips
                       </Link>
                     </div>
                   </CardContent>

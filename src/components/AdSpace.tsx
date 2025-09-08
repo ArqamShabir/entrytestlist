@@ -29,15 +29,15 @@ const AdSpace = ({ adSpace, className }: AdSpaceProps) => {
   return (
     <div
       className={cn(
-        'bg-muted rounded-md flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-border/50 mx-auto',
+        'bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg flex items-center justify-center text-muted-foreground text-sm border border-border/20 mx-auto',
         getSizeClasses(adSpace.size),
         className
       )}
     >
-      <div className="text-center">
-        <p className="font-medium">Advertisement</p>
-        <p className="text-xs opacity-75">({adSpace.size})</p>
-      </div>
+        <div className="text-center opacity-60">
+          <p className="font-medium">Ad Space</p>
+          <p className="text-xs">({adSpace.size})</p>
+        </div>
     </div>
   );
 };

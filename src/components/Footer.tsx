@@ -73,8 +73,8 @@ const Footer = () => {
         </div>
 
         {/* Ad Space */}
-        <div className="mb-8 text-center">
-          <div className="bg-muted rounded-md py-6 px-6 text-muted-foreground text-sm">
+        <div className="mb-6 text-center">
+          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg py-4 px-6 text-muted-foreground text-sm border border-border/20">
             Advertisement Space (970x250)
           </div>
         </div>

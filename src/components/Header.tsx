@@ -16,9 +16,9 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
-        {/* Ad Space - Header Banner */}
-        <div className="py-2 text-center border-b border-border/50">
-          <div className="bg-muted rounded-md py-4 px-6 text-muted-foreground text-sm">
+        {/* Ad Space - Header Banner (Cleaner Design) */}
+        <div className="py-2 text-center border-b border-border/30">
+          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-md py-3 px-6 text-muted-foreground text-sm border border-border/20">
             Advertisement Space (728x90)
           </div>
         </div>
@@ -26,12 +26,12 @@ const Header = () => {
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-primary-foreground" />
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-sm">
+              <BookOpen className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">EntryTestList</h1>
-              <p className="text-xs text-muted-foreground">Pakistan's Premier Test Guide</p>
+              <p className="text-xs text-muted-foreground hidden sm:block">Test Guide</p>
             </div>
           </Link>
 
