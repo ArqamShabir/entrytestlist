@@ -3,7 +3,7 @@
 
 import { WordPressPost, TestPost, BlogPost, WordPressCategory } from '@/types/wordpress';
 
-const BASE_URL = 'https://your-wordpress-site.com/wp-json/wp/v2';
+const BASE_URL = 'https://lightgoldenrodyellow-wildcat-247174.hostingersite.com/wp-json/wp/v2';
 
 export class WordPressService {
   private static async request(endpoint: string, options?: RequestInit) {
@@ -68,34 +68,22 @@ export class WordPressService {
     });
   }
 
-  // Get test posts (assuming tests have category 'test')
+  // Get test posts (tests have category slug 'tests')
   static async getTests(params: {
     per_page?: number;
     page?: number;
     search?: string;
   } = {}): Promise<TestPost[]> {
-    return this.getPostsByCategory('test', params) as Promise<TestPost[]>;
+    return this.getPostsByCategory('tests', params) as Promise<TestPost[]>;
   }
 
-  // Get blog posts (excluding test category)
+  // Get blog posts (only category slug 'blog')
   static async getBlogPosts(params: {
     per_page?: number;
     page?: number;
     search?: string;
   } = {}): Promise<BlogPost[]> {
-    const categories = await this.getCategories();
-    const testCategory = categories.find(cat => cat.slug === 'test');
-    
-    // Get all posts except those in test category
-    const allPosts = await this.getPosts(params);
-    
-    if (testCategory) {
-      return allPosts.filter(post => 
-        !post.categories.includes(testCategory.id)
-      ) as BlogPost[];
-    }
-
-    return allPosts as BlogPost[];
+    return this.getPostsByCategory('blog', params) as Promise<BlogPost[]>;
   }
 
   // Get single post by slug

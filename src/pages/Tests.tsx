@@ -1,23 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import TestCard from '@/components/TestCard';
-import AdSpace from '@/components/AdSpace';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { dummyTests, adSpaces } from '@/data/dummy-data';
 import { Search, Filter } from 'lucide-react';
+import { WordPressService } from '@/services/wordpress';
+import { TestPost as TestPostType } from '@/types/wordpress';
 
 const Tests = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
+  const [tests, setTests] = useState<TestPostType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const testTypes = ['all', 'MDCAT', 'NAT', 'GAT', 'ECAT'];
+  const testTypes = ['all', 'Medical', 'Engineering', 'General'];
   const difficulties = ['all', 'Beginner', 'Intermediate', 'Advanced'];
 
-  const filteredTests = dummyTests.filter(test => {
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const posts = await WordPressService.getTests({ per_page: 30 });
+        if (mounted) setTests(posts);
+      } catch (e: any) {
+        if (mounted) setError(e?.message || 'Failed to load tests');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const filteredTests = tests.filter(test => {
     const matchesSearch = test.title.rendered.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          test.excerpt.rendered.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === 'all' || test.acf?.test_type === selectedType;
@@ -25,9 +44,6 @@ const Tests = () => {
     
     return matchesSearch && matchesType && matchesDifficulty;
   });
-
-  const topAd = adSpaces.find(ad => ad.position === 'article-top');
-  const sidebarAd = adSpaces.find(ad => ad.position === 'sidebar');
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,11 +60,7 @@ const Tests = () => {
             preparation strategies, and important dates for your target test.
           </p>
           
-          {topAd && (
-            <div className="mb-8">
-              <AdSpace adSpace={topAd} />
-            </div>
-          )}
+          {/* Ads removed: using live WordPress data only */}
         </section>
 
         <div className="grid lg:grid-cols-4 gap-8">
@@ -124,7 +136,15 @@ const Tests = () => {
               ))}
             </div>
 
-            {filteredTests.length === 0 && (
+            {loading && (
+              <div className="text-center py-12 text-muted-foreground">Loading tests...</div>
+            )}
+
+            {error && (
+              <div className="text-center py-6 text-destructive">{error}</div>
+            )}
+
+            {!loading && filteredTests.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">No tests found</h3>
@@ -147,7 +167,6 @@ const Tests = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              {sidebarAd && <AdSpace adSpace={sidebarAd} />}
               
               <div className="bg-card rounded-lg border border-border p-6">
                 <h3 className="font-semibold text-foreground mb-4">Test Categories</h3>
@@ -170,7 +189,7 @@ const Tests = () => {
               <div className="bg-card rounded-lg border border-border p-6">
                 <h3 className="font-semibold text-foreground mb-4">Popular This Month</h3>
                 <div className="space-y-3">
-                  {dummyTests.slice(0, 3).map((test) => (
+                  {tests.slice(0, 3).map((test) => (
                     <div key={test.id} className="text-sm">
                       <a 
                         href={`/tests/${test.slug}`}

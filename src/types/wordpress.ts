@@ -38,7 +38,7 @@ export interface WordPressPost {
 
 export interface TestPost extends WordPressPost {
   acf?: {
-    test_type: 'MDCAT' | 'NAT' | 'GAT' | 'ECAT' | 'Other';
+    test_type: 'Medical' | 'Engineering' | 'General' | 'Other';
     test_difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
     test_duration: string;
     eligibility_criteria: string;
@@ -47,6 +47,7 @@ export interface TestPost extends WordPressPost {
     official_website: string;
     fee_structure: string;
     passing_criteria: string;
+    passing_c?: string;
     syllabus_outline: string;
     preparation_tips: string;
     important_dates: Array<{

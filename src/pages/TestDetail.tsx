@@ -1,20 +1,53 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import AdSpace from '@/components/AdSpace';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { dummyTests, adSpaces } from '@/data/dummy-data';
 import { 
   Clock, Calendar, Users, ExternalLink, 
   DollarSign, Award, BookOpen, CheckCircle,
   ArrowLeft, Share2
 } from 'lucide-react';
+import { WordPressService } from '@/services/wordpress';
+import { TestPost as TestPostType } from '@/types/wordpress';
 
 const TestDetail = () => {
   const { slug } = useParams();
-  const test = dummyTests.find(t => t.slug === slug);
+  const [test, setTest] = useState<TestPostType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [related, setRelated] = useState<TestPostType[]>([]);
+  const [shareFeedback, setShareFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const post = await WordPressService.getPostBySlug(slug || '');
+        if (mounted) setTest(post as TestPostType | null);
+        const rel = await WordPressService.getTests({ per_page: 4 });
+        if (mounted) setRelated(rel.filter(r => r.slug !== slug));
+      } catch (e: any) {
+        if (mounted) setError(e?.message || 'Failed to load test');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">Loading test...</div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!test) {
     return (
@@ -32,8 +65,46 @@ const TestDetail = () => {
   }
 
   const { title, content, acf } = test;
-  const topAd = adSpaces.find(ad => ad.position === 'article-top');
-  const sidebarAd = adSpaces.find(ad => ad.position === 'sidebar');
+  const plainTitle = title.rendered.replace(/<[^>]*>/g, "");
+  const passingCriteria = acf?.passing_criteria || acf?.passing_c;
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const navigatorAny = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
+
+    try {
+      if (typeof navigatorAny.share === "function") {
+        await navigatorAny.share({
+          title: plainTitle,
+          text: plainTitle,
+          url,
+        });
+        setShareFeedback("Shared using your device options.");
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        setShareFeedback("Link copied to clipboard.");
+        return;
+      }
+
+      setShareFeedback("Copy this link: " + url);
+    } catch (shareError) {
+      console.error("Share failed", shareError);
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(url);
+          setShareFeedback("Link copied to clipboard.");
+          return;
+        } catch (clipboardError) {
+          console.error("Clipboard copy failed", clipboardError);
+        }
+      }
+      setShareFeedback("Unable to share automatically. Copy the link manually.");
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -57,11 +128,7 @@ const TestDetail = () => {
           </Link>
         </Button>
 
-        {topAd && (
-          <div className="mb-8">
-            <AdSpace adSpace={topAd} />
-          </div>
-        )}
+        {/* Ads removed: using live WordPress data only */}
 
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Main Content */}
@@ -79,10 +146,15 @@ const TestDetail = () => {
                     </Badge>
                   )}
                 </div>
-                <Button variant="outline" size="sm">
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share
-                </Button>
+                <div className="flex flex-col items-end gap-1">
+                  <Button variant="outline" size="sm" onClick={handleShare}>
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share
+                  </Button>
+                  {shareFeedback && (
+                    <span className="text-xs text-muted-foreground text-right">{shareFeedback}</span>
+                  )}
+                </div>
               </div>
               
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
@@ -105,7 +177,7 @@ const TestDetail = () => {
                 {acf?.fee_structure && (
                   <div className="flex items-center">
                     <DollarSign className="w-4 h-4 mr-2 text-primary" />
-                    <span>Fee: {acf.fee_structure}</span>
+                    <span className="whitespace-pre-line">Fee: {acf.fee_structure}</span>
                   </div>
                 )}
               </div>
@@ -117,7 +189,7 @@ const TestDetail = () => {
                 <CardContent className="p-4 text-center">
                   <Users className="w-8 h-8 text-primary mx-auto mb-2" />
                   <h3 className="font-semibold text-foreground mb-1">Eligibility</h3>
-                  <p className="text-sm text-muted-foreground">{acf?.eligibility_criteria}</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-line">{acf?.eligibility_criteria}</p>
                 </CardContent>
               </Card>
               
@@ -125,7 +197,7 @@ const TestDetail = () => {
                 <CardContent className="p-4 text-center">
                   <Award className="w-8 h-8 text-primary mx-auto mb-2" />
                   <h3 className="font-semibold text-foreground mb-1">Passing Criteria</h3>
-                  <p className="text-sm text-muted-foreground">{acf?.passing_criteria}</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-line">{passingCriteria}</p>
                 </CardContent>
               </Card>
 
@@ -133,7 +205,7 @@ const TestDetail = () => {
                 <CardContent className="p-4 text-center">
                   <Calendar className="w-8 h-8 text-primary mx-auto mb-2" />
                   <h3 className="font-semibold text-foreground mb-1">Application Deadline</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground whitespace-pre-line">
                     {acf?.application_deadline ? new Date(acf.application_deadline).toLocaleDateString() : 'Check official site'}
                   </p>
                 </CardContent>
@@ -146,7 +218,7 @@ const TestDetail = () => {
               <section>
                 <h2 className="text-2xl font-bold text-foreground mb-4">Overview</h2>
                 <div 
-                  className="prose prose-gray max-w-none text-muted-foreground"
+                  className="wp-content"
                   dangerouslySetInnerHTML={{ __html: content.rendered }}
                 />
               </section>
@@ -160,7 +232,7 @@ const TestDetail = () => {
                   </h2>
                   <Card>
                     <CardContent className="p-6">
-                      <p className="text-muted-foreground">{acf.syllabus_outline}</p>
+                      <p className="text-muted-foreground whitespace-pre-line">{acf.syllabus_outline}</p>
                     </CardContent>
                   </Card>
                 </section>
@@ -175,7 +247,7 @@ const TestDetail = () => {
                   </h2>
                   <Card>
                     <CardContent className="p-6">
-                      <p className="text-muted-foreground">{acf.preparation_tips}</p>
+                      <p className="text-muted-foreground whitespace-pre-line">{acf.preparation_tips}</p>
                     </CardContent>
                   </Card>
                 </section>
@@ -226,24 +298,20 @@ const TestDetail = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              {sidebarAd && <AdSpace adSpace={sidebarAd} />}
               
               <Card>
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-foreground mb-4">Related Tests</h3>
                   <div className="space-y-3">
-                    {dummyTests
-                      .filter(t => t.id !== test.id)
-                      .slice(0, 3)
-                      .map((relatedTest) => (
-                        <Link
-                          key={relatedTest.id}
-                          to={`/tests/${relatedTest.slug}`}
-                          className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          {relatedTest.title.rendered}
-                        </Link>
-                      ))}
+                    {related.slice(0,3).map((relatedTest) => (
+                      <Link
+                        key={relatedTest.id}
+                        to={`/tests/${relatedTest.slug}`}
+                        className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {relatedTest.title.rendered}
+                      </Link>
+                    ))}
                   </div>
                 </CardContent>
               </Card>

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -5,15 +6,38 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import TestCard from '@/components/TestCard';
 import BlogCard from '@/components/BlogCard';
-import AdSpace from '@/components/AdSpace';
-import { dummyTests, dummyBlogs, adSpaces } from '@/data/dummy-data';
+import { WordPressService } from '@/services/wordpress';
+import { TestPost as TestPostType, BlogPost as BlogPostType } from '@/types/wordpress';
 import { Search, TrendingUp, BookOpen, Users } from 'lucide-react';
 import heroImage from '@/assets/hero-education.jpg';
 
 const Home = () => {
-  const featuredTests = dummyTests.slice(0, 3);
-  const recentBlogs = dummyBlogs.slice(0, 2);
-  const sidebarAd = adSpaces.find(ad => ad.position === 'sidebar');
+  const [featuredTests, setFeaturedTests] = useState<TestPostType[]>([]);
+  const [recentBlogs, setRecentBlogs] = useState<BlogPostType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const [tests, blogs] = await Promise.all([
+          WordPressService.getTests({ per_page: 3 }),
+          WordPressService.getBlogPosts({ per_page: 2 })
+        ]);
+        if (mounted) {
+          setFeaturedTests(tests);
+          setRecentBlogs(blogs);
+        }
+      } catch (e: any) {
+        if (mounted) setError(e?.message || 'Failed to load content');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   const stats = [
     { label: 'Active Tests', value: '25+', icon: BookOpen },
@@ -77,12 +101,7 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Ad Space */}
-        <section className="py-8">
-          <div className="container mx-auto px-4">
-            {sidebarAd && <AdSpace adSpace={{...sidebarAd, size: '970x250'}} />}
-          </div>
-        </section>
+        {/* Ads removed: using live WordPress data only */}
 
         <div className="container mx-auto px-4 py-16">
           <div className="grid lg:grid-cols-4 gap-8">
@@ -102,6 +121,9 @@ const Home = () => {
                     <TestCard key={test.id} test={test} />
                   ))}
                 </div>
+                {loading && (
+                  <div className="text-center py-6 text-muted-foreground">Loading tests...</div>
+                )}
               </section>
 
               {/* Search Section - Cleaner Design */}
@@ -131,13 +153,16 @@ const Home = () => {
                     <BlogCard key={blog.id} blog={blog} />
                   ))}
                 </div>
+                {loading && (
+                  <div className="text-center py-6 text-muted-foreground">Loading articles...</div>
+                )}
               </section>
             </div>
 
             {/* Sidebar */}
-            <div className="lg:col-span-1">
+              <div className="lg:col-span-1">
               <div className="sticky top-8 space-y-6">
-                {sidebarAd && <AdSpace adSpace={sidebarAd} />}
+                {/* Ads removed */}
                 
                 <Card className="border-primary/20">
                   <CardContent className="p-4">

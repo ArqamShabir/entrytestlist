@@ -14,6 +14,8 @@ import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import Disclaimer from "./pages/Disclaimer";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
+import BackToTop from "./components/BackToTop";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +25,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tests" element={<Tests />} />
@@ -38,6 +41,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <BackToTop />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

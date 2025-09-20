@@ -110,4 +110,58 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* WordPress content formatting */
+.wp-content {
+  @apply space-y-4 leading-relaxed;
+}
+.wp-content h1,
+.wp-content h2,
+.wp-content h3 {
+  @apply text-foreground font-semibold mt-8 first:mt-0;
+}
+.wp-content h2 {
+  @apply text-2xl;
+}
+.wp-content h3 {
+  @apply text-xl;
+}
+.wp-content p {
+  @apply text-muted-foreground;
+}
+.wp-content ul {
+  @apply list-disc pl-6;
+}
+.wp-content ol {
+  @apply list-decimal pl-6;
+}
+.wp-content li {
+  @apply mb-2;
+}
+.wp-content a {
+  @apply text-primary underline;
+}
+.wp-content blockquote {
+  @apply border-l-4 border-primary/40 pl-4 italic text-muted-foreground;
+}
+.wp-content table {
+  @apply w-full border-collapse text-sm;
+}
+.wp-content table th,
+.wp-content table td {
+  @apply border border-border px-3 py-2;
+}
+.wp-content img {
+  @apply max-w-full rounded-md;
+}
+.wp-content figure {
+  @apply my-6;
+}
+.wp-content figcaption {
+  @apply text-center text-xs text-muted-foreground mt-2;
 }

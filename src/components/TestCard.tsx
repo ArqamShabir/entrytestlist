@@ -72,7 +72,7 @@ const TestCard = ({ test, featured = false }: TestCardProps) => {
           {acf?.eligibility_criteria && (
             <div className="flex items-center text-sm text-muted-foreground">
               <Users className="w-4 h-4 mr-2 text-primary" />
-              <span className="line-clamp-1">Eligibility: {acf.eligibility_criteria}</span>
+              <span className="line-clamp-2 whitespace-pre-line">Eligibility: {acf.eligibility_criteria}</span>
             </div>
           )}
         </div>

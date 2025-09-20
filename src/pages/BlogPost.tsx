@@ -1,21 +1,55 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import AdSpace from '@/components/AdSpace';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { dummyBlogs, adSpaces } from '@/data/dummy-data';
 import { 
   Clock, User, ArrowLeft, Share2, 
   Calendar, Tag, BookOpen
 } from 'lucide-react';
+import { WordPressService } from '@/services/wordpress';
+import { BlogPost as BlogPostType } from '@/types/wordpress';
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const blog = dummyBlogs.find(b => b.slug === slug);
+  const [blog, setBlog] = useState<BlogPostType | null>(null);
+  const [related, setRelated] = useState<BlogPostType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!blog) {
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const post = await WordPressService.getPostBySlug(slug || '');
+        if (mounted) setBlog(post as BlogPostType | null);
+        const recent = await WordPressService.getBlogPosts({ per_page: 3 });
+        if (mounted) setRelated(recent.filter(p => p.slug !== slug));
+      } catch (e: any) {
+        if (mounted) setError(e?.message || 'Failed to load article');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">
+          Loading article...
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!loading && !blog) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -30,9 +64,7 @@ const BlogPost = () => {
     );
   }
 
-  const { title, content, date, acf } = blog;
-  const topAd = adSpaces.find(ad => ad.position === 'article-top');
-  const sidebarAd = adSpaces.find(ad => ad.position === 'sidebar');
+  const { title, content, date, acf } = blog!;
 
   return (
     <div className="min-h-screen bg-background">
@@ -56,11 +88,7 @@ const BlogPost = () => {
           </Link>
         </Button>
 
-        {topAd && (
-          <div className="mb-8">
-            <AdSpace adSpace={topAd} />
-          </div>
-        )}
+        {/* Ads removed: using live WordPress data only */}
 
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Main Content */}
@@ -123,7 +151,7 @@ const BlogPost = () => {
               {/* Article Content */}
               <div className="space-y-6">
                 <div 
-                  className="prose prose-lg max-w-none text-muted-foreground leading-relaxed"
+                  className="wp-content"
                   dangerouslySetInnerHTML={{ __html: content.rendered }}
                 />
                 
@@ -176,28 +204,23 @@ const BlogPost = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              {sidebarAd && <AdSpace adSpace={sidebarAd} />}
-              
               <Card>
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-foreground mb-4">Related Articles</h3>
                   <div className="space-y-4">
-                    {dummyBlogs
-                      .filter(b => b.id !== blog.id)
-                      .slice(0, 3)
-                      .map((relatedBlog) => (
-                        <div key={relatedBlog.id}>
-                          <Link
-                            to={`/blog/${relatedBlog.slug}`}
-                            className="text-sm text-foreground hover:text-primary transition-colors line-clamp-2 block mb-2"
-                          >
-                            {relatedBlog.title.rendered}
-                          </Link>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(relatedBlog.date).toLocaleDateString()}
-                          </p>
-                        </div>
-                      ))}
+                    {related.map((relatedBlog) => (
+                      <div key={relatedBlog.id}>
+                        <Link
+                          to={`/blog/${relatedBlog.slug}`}
+                          className="text-sm text-foreground hover:text-primary transition-colors line-clamp-2 block mb-2"
+                        >
+                          {relatedBlog.title.rendered}
+                        </Link>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(relatedBlog.date).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>

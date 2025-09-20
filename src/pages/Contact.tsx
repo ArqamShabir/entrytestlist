@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, MapPin, Phone, Send } from 'lucide-react';
+import { Mail, MapPin, Send } from 'lucide-react';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -75,22 +75,6 @@ const Contact = () => {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Phone className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-foreground">Phone</h3>
-                        <p className="text-sm text-muted-foreground">+92-XXX-XXXXXXX</p>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Call us during business hours (9 AM - 6 PM PKT).
-                    </p>
-                  </CardContent>
-                </Card>
 
                 <Card>
                   <CardContent className="p-6">
@@ -213,7 +197,7 @@ const Contact = () => {
 
                     <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground">
                       <strong className="text-foreground">Note:</strong> We typically respond to inquiries within 24 hours during business days. 
-                      For urgent matters, please call our phone number listed above.
+                      For urgent matters, please reach out via email and include "URGENT" in the subject.
                     </div>
                   </form>
                 </CardContent>

@@ -17,7 +17,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
         {/* Ad Space - Header Banner (Cleaner Design) */}
-        <div className="py-2 text-center border-b border-border/30">
+        <div className="py-2 hidden text-center border-b border-border/30">
           <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-md py-3 px-6 text-muted-foreground text-sm border border-border/20">
             Advertisement Space (728x90)
           </div>

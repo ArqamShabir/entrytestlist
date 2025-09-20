@@ -1,5 +1,13 @@
+import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { AdSpace as AdSpaceType } from '@/types/wordpress';
+import { ADSENSE_CLIENT, AD_SLOT_IDS, DEFAULT_AD_PROPS } from '@/config/adsense';
+
+declare global {
+  interface Window {
+    adsbygoogle?: Array<Record<string, unknown>>;
+  }
+}
 
 interface AdSpaceProps {
   adSpace: AdSpaceType;
@@ -7,7 +15,23 @@ interface AdSpaceProps {
 }
 
 const AdSpace = ({ adSpace, className }: AdSpaceProps) => {
-  if (!adSpace.isActive) return null;
+  const slotId = AD_SLOT_IDS[adSpace.id];
+
+  useEffect(() => {
+    if (!adSpace.isActive || !slotId) return;
+
+    const timeoutId = window.setTimeout(() => {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (error) {
+        console.warn('AdSense rendering failed', error);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [adSpace.isActive, slotId]);
+
+  if (!adSpace.isActive || !slotId) return null;
 
   const getSizeClasses = (size: string) => {
     switch (size) {
@@ -20,24 +44,22 @@ const AdSpace = ({ adSpace, className }: AdSpaceProps) => {
       case '970x250':
         return 'h-[250px] w-full max-w-[970px]';
       case 'responsive':
-        return 'h-auto w-full';
+        return 'w-full';
       default:
-        return 'h-[250px] w-[300px]';
+        return 'w-full';
     }
   };
 
   return (
-    <div
-      className={cn(
-        'bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg flex items-center justify-center text-muted-foreground text-sm border border-border/20 mx-auto',
-        getSizeClasses(adSpace.size),
-        className
-      )}
-    >
-        <div className="text-center opacity-60">
-          <p className="font-medium">Ad Space</p>
-          <p className="text-xs">({adSpace.size})</p>
-        </div>
+    <div className={cn('w-full flex justify-center', className)}>
+      <ins
+        className={cn('adsbygoogle block', getSizeClasses(adSpace.size))}
+        style={{ display: 'block' }}
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slotId}
+        data-ad-format={DEFAULT_AD_PROPS.format}
+        data-full-width-responsive={DEFAULT_AD_PROPS.fullWidthResponsive ? 'true' : 'false'}
+      />
     </div>
   );
 };

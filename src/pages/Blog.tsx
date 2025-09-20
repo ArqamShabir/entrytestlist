@@ -1,27 +1,43 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BlogCard from '@/components/BlogCard';
-import AdSpace from '@/components/AdSpace';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { dummyBlogs, adSpaces } from '@/data/dummy-data';
 import { Search, TrendingUp, Clock } from 'lucide-react';
+import { WordPressService } from '@/services/wordpress';
+import { BlogPost as BlogPostType } from '@/types/wordpress';
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [blogs, setBlogs] = useState<BlogPostType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredBlogs = dummyBlogs.filter(blog => 
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const posts = await WordPressService.getBlogPosts({ per_page: 20 });
+        if (mounted) setBlogs(posts);
+      } catch (e: any) {
+        if (mounted) setError(e?.message || 'Failed to load blog posts');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const filteredBlogs = blogs.filter(blog => 
     blog.title.rendered.toLowerCase().includes(searchTerm.toLowerCase()) ||
     blog.excerpt.rendered.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const topAd = adSpaces.find(ad => ad.position === 'article-top');
-  const sidebarAd = adSpaces.find(ad => ad.position === 'sidebar');
-
   const categories = ['Preparation Tips', 'Test Updates', 'Success Stories', 'Study Guides'];
-  const recentPosts = dummyBlogs.slice(0, 5);
+  const recentPosts = blogs.slice(0, 5);
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,11 +54,7 @@ const Blog = () => {
             Stay informed with our comprehensive guides and success stories.
           </p>
           
-          {topAd && (
-            <div className="mb-8">
-              <AdSpace adSpace={topAd} />
-            </div>
-          )}
+          {/* Ads removed: using live WordPress data only */}
         </section>
 
         <div className="grid lg:grid-cols-4 gap-8">
@@ -61,7 +73,7 @@ const Blog = () => {
             </div>
 
             {/* Featured Article */}
-            {filteredBlogs.length > 0 && (
+            {filteredBlogs.length > 0 && !loading && (
               <div className="mb-12">
                 <div className="flex items-center space-x-2 mb-6">
                   <TrendingUp className="w-5 h-5 text-primary" />
@@ -108,6 +120,14 @@ const Blog = () => {
               ))}
             </div>
 
+            {loading && (
+              <div className="text-center py-12 text-muted-foreground">Loading articles...</div>
+            )}
+
+            {error && (
+              <div className="text-center py-6 text-destructive">{error}</div>
+            )}
+
             {filteredBlogs.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">📝</div>
@@ -125,7 +145,6 @@ const Blog = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              {sidebarAd && <AdSpace adSpace={sidebarAd} />}
               
               {/* Categories */}
               <div className="bg-card rounded-lg border border-border p-6">
