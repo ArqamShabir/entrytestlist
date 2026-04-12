@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Filter } from 'lucide-react';
 import { WordPressService } from '@/services/wordpress';
 import { TestPost as TestPostType } from '@/types/wordpress';
+import { SEO } from '@/components/SEO';
 
 const Tests = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,6 +48,11 @@ const Tests = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Pakistani Entry Tests | Preparation Guides & Complete Syllabus"
+        description="Comprehensive guides for all major Pakistani entrance examinations like MDCAT, ECAT, NAT, and GAT. Find detailed information and preparation strategies."
+        canonical="https://entrytestlist.com/tests"
+      />
       <Header />
       
       <main className="container mx-auto px-4 py-8">

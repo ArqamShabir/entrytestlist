@@ -11,6 +11,8 @@ import { TestPost as TestPostType, BlogPost as BlogPostType } from '@/types/word
 import { Search, TrendingUp, BookOpen, Users } from 'lucide-react';
 import heroImage from '@/assets/hero-education.jpg';
 
+import { SEO } from '@/components/SEO';
+
 const Home = () => {
   const [featuredTests, setFeaturedTests] = useState<TestPostType[]>([]);
   const [recentBlogs, setRecentBlogs] = useState<BlogPostType[]>([]);
@@ -47,6 +49,11 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Entry Test List | MDCAT, ECAT, NTS, GAT Preparation"
+        description="Comprehensive preparation guide for MDCAT, NAT, ECAT, GAT, and other Pakistani entrance tests. Find past papers, test syllabus, and expert tips to secure your admission."
+        canonical="https://entrytestlist.com"
+      />
       <Header />
       
       <main>

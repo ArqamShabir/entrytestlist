@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { WordPressService } from '@/services/wordpress';
 import { TestPost as TestPostType } from '@/types/wordpress';
+import { SEO } from '@/components/SEO';
 
 const TestDetail = () => {
   const { slug } = useParams();
@@ -108,6 +109,11 @@ const TestDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={`${plainTitle} | Entry Test List`}
+        description={`Complete details on ${plainTitle} including eligibility criteria, syllabus outline, exam dates, and preparation tips.`}
+        canonical={`https://entrytestlist.com/tests/${slug}`}
+      />
       <Header />
       
       <main className="container mx-auto px-4 py-8">

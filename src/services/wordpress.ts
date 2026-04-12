@@ -2,6 +2,7 @@
 // Replace BASE_URL with your actual WordPress site URL when ready
 
 import { WordPressPost, TestPost, BlogPost, WordPressCategory } from '@/types/wordpress';
+import { staticBlogs } from '@/data/blogs';
 
 const BASE_URL = 'https://lightgoldenrodyellow-wildcat-247174.hostingersite.com/wp-json/wp/v2';
 
@@ -83,11 +84,22 @@ export class WordPressService {
     page?: number;
     search?: string;
   } = {}): Promise<BlogPost[]> {
-    return this.getPostsByCategory('blog', params) as Promise<BlogPost[]>;
+    let result = [...staticBlogs];
+    if (params.search) {
+      const s = params.search.toLowerCase();
+      result = result.filter(b => b.title.rendered.toLowerCase().includes(s) || b.content.rendered.toLowerCase().includes(s));
+    }
+    const page = params.page || 1;
+    const per_page = params.per_page || 10;
+    const start = (page - 1) * per_page;
+    return result.slice(start, start + per_page);
   }
 
   // Get single post by slug
   static async getPostBySlug(slug: string): Promise<WordPressPost | null> {
+    const staticBlog = staticBlogs.find(b => b.slug === slug);
+    if (staticBlog) return staticBlog;
+
     try {
       const posts = await this.request(`/posts?slug=${slug}&_embed=1&acf_format=standard`);
       return posts.length > 0 ? posts[0] : null;

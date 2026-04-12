@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Search, TrendingUp, Clock } from 'lucide-react';
 import { WordPressService } from '@/services/wordpress';
 import { BlogPost as BlogPostType } from '@/types/wordpress';
+import { SEO } from '@/components/SEO';
+import AdSpace from '@/components/AdSpace';
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,6 +43,11 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Blog & Articles | Entry Test List"
+        description="Expert insights, preparation tips, and the latest updates on Pakistani entrance tests. Stay informed with our comprehensive guides."
+        canonical="https://entrytestlist.com/blog"
+      />
       <Header />
       
       <main className="container mx-auto px-4 py-8">
@@ -54,7 +61,7 @@ const Blog = () => {
             Stay informed with our comprehensive guides and success stories.
           </p>
           
-          {/* Ads removed: using live WordPress data only */}
+          <AdSpace adSpace={{ id: 'header-leaderboard', position: 'header', size: '728x90', isActive: true }} className="my-8" />
         </section>
 
         <div className="grid lg:grid-cols-4 gap-8">
@@ -146,6 +153,8 @@ const Blog = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
               
+              <AdSpace adSpace={{ id: 'sidebar-rectangle', position: 'sidebar', size: '300x250', isActive: true }} className="mb-6" />
+
               {/* Categories */}
               <div className="bg-card rounded-lg border border-border p-6">
                 <h3 className="font-semibold text-foreground mb-4">Categories</h3>

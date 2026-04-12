@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { WordPressService } from '@/services/wordpress';
 import { BlogPost as BlogPostType } from '@/types/wordpress';
+import { SEO } from '@/components/SEO';
+import AdSpace from '@/components/AdSpace';
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -68,6 +70,11 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={`${title.rendered} | Entry Test List`}
+        description={acf?.meta_description || excerpt.rendered.replace(/<[^>]*>/g, '')}
+        canonical={`https://entrytestlist.com/blog/${slug}`}
+      />
       <Header />
       
       <main className="container mx-auto px-4 py-8">
@@ -88,7 +95,7 @@ const BlogPost = () => {
           </Link>
         </Button>
 
-        {/* Ads removed: using live WordPress data only */}
+        <AdSpace adSpace={{ id: 'header-leaderboard', position: 'header', size: '728x90', isActive: true }} className="mb-8" />
 
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Main Content */}
@@ -150,36 +157,12 @@ const BlogPost = () => {
 
               {/* Article Content */}
               <div className="space-y-6">
+                <AdSpace adSpace={{ id: 'in-article', position: 'article-top', size: 'responsive', isActive: true }} className="my-6" />
                 <div 
-                  className="wp-content"
+                  className="wp-content text-muted-foreground leading-relaxed prose prose-lg dark:prose-invert max-w-none"
                   dangerouslySetInnerHTML={{ __html: content.rendered }}
                 />
-                
-                {/* Expanded Content */}
-                <div className="space-y-4 text-muted-foreground leading-relaxed">
-                  <p>
-                    This comprehensive guide provides detailed insights into effective preparation strategies. 
-                    Students across Pakistan have used these methods to achieve remarkable success in their entrance examinations.
-                  </p>
-                  <p>
-                    The key to success lies in consistent practice, understanding concepts rather than memorization, 
-                    and maintaining a structured study schedule that allows for regular revision and mock testing.
-                  </p>
-                  <h3 className="text-xl font-semibold text-foreground mt-8 mb-4">Key Preparation Strategies</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-4">
-                    <li>Create a realistic study timeline based on your target test date</li>
-                    <li>Focus on understanding fundamental concepts before moving to advanced topics</li>
-                    <li>Practice with past papers and mock tests regularly</li>
-                    <li>Join study groups or online communities for peer support</li>
-                    <li>Take regular breaks to avoid burnout and maintain mental health</li>
-                  </ul>
-                  <h3 className="text-xl font-semibold text-foreground mt-8 mb-4">Common Mistakes to Avoid</h3>
-                  <p>
-                    Many students make critical errors during preparation that can significantly impact their performance. 
-                    Avoid cramming, neglecting weak subjects, and skipping practice tests. Instead, focus on balanced 
-                    preparation across all subjects and consistent evaluation of your progress.
-                  </p>
-                </div>
+                <AdSpace adSpace={{ id: 'in-article', position: 'article-bottom', size: 'responsive', isActive: true }} className="my-6" />
               </div>
 
               {/* Related Tests */}
@@ -204,6 +187,7 @@ const BlogPost = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
+              <AdSpace adSpace={{ id: 'sidebar-rectangle', position: 'sidebar', size: '300x250', isActive: true }} className="mb-6" />
               <Card>
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-foreground mb-4">Related Articles</h3>
